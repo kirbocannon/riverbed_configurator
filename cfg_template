@@ -1,3 +1,4 @@
+!---------------------delta1---------------------------------!
 spanning-tree vlan 201,202,203,211,212,213 priority 4096
 spanning-tree vlan 201,202,203,211,212,213  forward-time 7
 spanning-tree vlan 201,202,203,211,212,213 max-age 10
@@ -111,3 +112,70 @@ interface vlan213
   ip pim sparse-mode
  no shut
 !
+!---------------------------------delta 2-----------------------------------------!
+
+! L3 Interfaces
+default interface g1/0/40
+!
+interface GigabitEthernet1/0/40
+ description RMEX05CR01 Gi1/0/40 RMEX05WA02 Gi0/0/1
+ switchport
+ switchport access vlan 201
+ speed 1000
+ duplex full
+ service-policy input SERVER_FARM_POLICY
+ service-policy output 2P6Q3T_EGRESS
+no shut
+!
+default interface g1/0/46
+!
+interface GigabitEthernet1/0/46
+ description RMEX05CR01 Gi1/0/46 RMEX05WA01 Gi0/0/0
+ switchport
+ switchport access vlan 201
+ speed 1000
+ duplex full
+ service-policy input SERVER_FARM_POLICY
+ service-policy output 2P6Q3T_EGRESS
+no shut
+!
+default interface g2/0/40
+!
+interface GigabitEthernet2/0/40
+ description RMEX05CR01 Gi2/0/40 RMEX05WA02 Gi0/0/2
+ switchport
+ switchport access vlan 211
+ speed 1000
+ duplex full
+ service-policy input SERVER_FARM_POLICY
+ service-policy output 2P6Q3T_EGRESS
+end
+!
+default interface g2/0/46
+!
+interface GigabitEthernet2/0/46
+ description RMEX05CR01 Gi2/0/46 RMEX05WA01 Gi0/0/2
+ switchport
+ switchport access vlan 211
+ speed 1000
+ duplex full
+ no switchport port-security
+ no switchport port-security maximum
+ no switchport port-security aging time 5
+ no switchport port-security violation restrict
+ no switchport port-security aging type inactivity
+ no shut
+
+!
+router ospf 1
+ no passive-interface Vlan203
+ no passive-interface Vlan213
+ no passive-interface GigabitEthernet1/0/40
+ no passive-interface GigabitEthernet1/0/46
+ no passive-interface GigabitEthernet2/0/40
+ no passive-interface GigabitEthernet2/0/46
+network 172.19.21.1 0.0.0.0 area 0
+ network 172.19.21.17 0.0.0.0 area 0
+!
+
+		
