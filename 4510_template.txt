@@ -1,0 +1,39 @@
+interface GigabitEthernet1/45
+ switchport access vlan 1104
+ switchport mode access
+ switchport voice vlan 1304
+ switchport port-security maximum 5
+ switchport port-security violation restrict
+ switchport port-security aging time 5
+ switchport port-security aging type inactivity
+ switchport port-security
+
+
+interface Vlan203
+ description SH_203_L3
+ ip address 10.197.13.251 255.255.254.0
+ no ip redirects
+ no ip unreachables
+ no ip proxy-arp
+ ip pim dr-priority 100
+ ip pim sparse-mode
+ standby 2 $vlan_203
+ standby 2 priority 210
+ standby 2 preempt delay minimum 1800 sync 300
+ ip igmp access-group IGMP_MCAST_OTHER
+ arp timeout 300
+
+
+interface Vlan213
+ description SH_213_L3
+ ip address 172.25.43.252 255.255.255.128
+ no ip redirects
+ no ip unreachables
+ no ip proxy-arp
+ ip pim dr-priority 50
+ ip pim sparse-mode
+ standby 2 ip $vlan_213
+ standby 2 priority 205
+ standby 2 preempt delay minimum 1800 sync 300
+ ip igmp access-group IGMP_MCAST_OTHER
+ arp timeout 300
