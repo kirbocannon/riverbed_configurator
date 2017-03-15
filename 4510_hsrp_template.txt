@@ -1,0 +1,252 @@
+!--------------------------------------- Left CR Configuration -------------------------------------------------------!
+!--------------------------------------- Delta 1 ---------------------------------------------------------------------!
+!
+spanning-tree vlan 201,202,203,211,212,213 priority 4096
+spanning-tree vlan 201,202,203,211,212,213  forward-time 7
+spanning-tree vlan 201,202,203,211,212,213 max-age 10
+!
+! Vlan Steelhead Bridge mode vlans 201/202/203 ( on local switch only)
+!
+vlan 201
+ Name SH_201_L2
+!
+vlan 202
+ Name SH_202_L2
+!
+vlan 203
+ Name SH_203_L3
+!
+! Vlan Steelhead Bridge mode vlans 211/212/213 ( on local switch only)
+!
+vlan 211
+ Name SH_211_L2
+!
+vlan 212
+ Name SH_212_L2
+!
+vlan 213
+ Name SH_213_L3
+!
+! Steelhead Primary Port Config - Temp
+interface GigabitEthernet1/17
+ description Tem Connection _New Riverbed Primary Port
+ switchport access vlan 3100
+ switchport mode access
+ no shut
+!
+default interface g1/44
+default interface g1/45
+!
+interface GigabitEthernet1/44
+ description $cr_hostname Gi1/44 $sh_hostname wan2_0
+ switchport access vlan 201
+ switchport mode access
+ no cdp enable
+ speed 1000
+ duplex full
+ spanning-tree portfast
+ spanning-tree bpduguard disable
+ service-policy input SERVER_FARM_POLICY
+ service-policy output 2P6Q3T_EGRESS
+ no shut
+!
+interface GigabitEthernet1/45
+ description $cr_hostname Gi1/45 $sh_hostname lan2_0
+ switchport access vlan 203
+ switchport mode access
+ no cdp enable
+ speed 1000
+ duplex full
+ spanning-tree portfast
+ spanning-tree bpduguard disable
+ service-policy input SERVER_FARM_POLICY
+ service-policy output 2P6Q3T_EGRESS
+ no shut
+!
+interface Vlan203
+ description SH_203_L3
+ ip address $left_cr_svi_ip_vlan_203
+ ip ospf authentication message-digest
+ ip ospf message-digest-key 1 md5 7 blah
+ ip ospf network broadcast
+ ip ospf cost 100
+ ip pim sparse-mode
+ standby 2 $vlan_203
+ standby 2 priority 210
+ standby 2 preempt delay minimum 1800 sync 300
+ arp timeout 300
+!
+interface Vlan213
+ description SH_213_L3
+ ip address $left_cr_svi_ip_vlan_213
+ ip ospf authentication message-digest
+ ip ospf message-digest-key 1 md5 7 blah
+ ip ospf network broadcast
+ ip ospf cost 100
+ ip pim sparse-mode
+ standby 2 ip $vlan_213
+ standby 2 priority 205
+ standby 2 preempt delay minimum 1800 sync 300
+ arp timeout 300
+!
+!--------------------------------------- Left CR Configuration -------------------------------------------------------!
+!--------------------------------------- Delta 2 ---------------------------------------------------------------------!
+!
+! L3 Interfaces
+default interface g1/40
+!
+interface GigabitEthernet1/40
+ description $cr_hostname Gi1/40 R$site_code$floorWA02 $wa02_to_gi_1_40_cr1
+ switchport
+ switchport access vlan 201
+ speed 1000
+ duplex full
+ service-policy input SERVER_FARM_POLICY
+ service-policy output 2P6Q3T_EGRESS
+ no shut
+!
+default interface g1/46
+!
+interface GigabitEthernet1/46
+ description $cr_hostname Gi1/46 R$site_code$floorWA01 $wa01_to_gi_1_46_cr1
+ switchport
+ switchport access vlan 201
+ speed 1000
+ duplex full
+ service-policy input SERVER_FARM_POLICY
+ service-policy output 2P6Q3T_EGRESS
+ no shut
+!
+router ospf 1
+ no passive-interface Vlan203
+ no passive-interface Vlan213
+ no passive-interface GigabitEthernet1/40
+ no passive-interface GigabitEthernet1/46
+ network $vlan_203 0.0.0.0 area 0
+ network $vlan_213 0.0.0.0 area 0
+!
+!--------------------------------------- Right CR Configuration ------------------------------------------------------!
+!--------------------------------------- Delta 1 ---------------------------------------------------------------------!
+!
+spanning-tree vlan 201,202,203,211,212,213 priority 4096
+spanning-tree vlan 201,202,203,211,212,213  forward-time 7
+spanning-tree vlan 201,202,203,211,212,213 max-age 10
+!
+! Vlan Steelhead Bridge mode vlans 201/202/203 ( on local switch only)
+!
+vlan 201
+ Name SH_201_L2
+!
+vlan 202
+ Name SH_202_L2
+!
+vlan 203
+ Name SH_203_L3
+!
+! Vlan Steelhead Bridge mode vlans 211/212/213 ( on local switch only)
+!
+vlan 211
+ Name SH_211_L2
+!
+!
+vlan 212
+ Name SH_212_L2
+!
+!
+vlan 213
+ Name SH_213_L3
+!
+default interface g2/44
+default interface g2/45
+!
+interface GigabitEthernet2/44
+ description $cr_hostname Gi2/44 $sh_hostname wan3_0
+ switchport access vlan 211
+ switchport mode access
+ no cdp enable
+ speed 1000
+ duplex full
+ spanning-tree portfast
+ spanning-tree bpduguard disable
+ service-policy input SERVER_FARM_POLICY
+ service-policy output 2P6Q3T_EGRESS
+ no shut
+!
+interface GigabitEthernet2/45
+ description $cr_hostname Gi2/45 $sh_hostname lan3_0
+ switchport access vlan 213
+ switchport mode access
+ no cdp enable
+ speed 1000
+ duplex full
+ spanning-tree portfast
+ spanning-tree bpduguard disable
+ service-policy input SERVER_FARM_POLICY
+ service-policy output 2P6Q3T_EGRESS
+ no shut
+!
+interface Vlan203
+ description SH_203_L3
+ ip address $right_cr_svi_ip_vlan_203
+ ip ospf authentication message-digest
+ ip ospf message-digest-key 1 md5 7 blah
+ ip ospf network broadcast
+ ip ospf cost 100
+ ip pim sparse-mode
+ standby 2 $vlan_203
+ standby 2 priority 210
+ standby 2 preempt delay minimum 1800 sync 300
+ arp timeout 300
+!
+interface Vlan213
+ description SH_213_L3
+ ip address $right_cr_svi_ip_vlan_213
+ ip ospf authentication message-digest
+ ip ospf message-digest-key 1 md5 7 blah
+ ip ospf network broadcast
+ ip ospf cost 100
+ ip pim sparse-mode
+ standby 2 ip $vlan_213
+ standby 2 priority 205
+ standby 2 preempt delay minimum 1800 sync 300
+ arp timeout 300
+!
+!--------------------------------------- Right CR Configuration ------------------------------------------------------!
+!--------------------------------------- Delta 2 ---------------------------------------------------------------------!
+!
+default interface g2/40
+!
+interface GigabitEthernet2/40
+ description $cr_hostname Gi2/40 R$site_code$floorWA02 $wa02_to_gi_2_40_cr2
+ switchport
+ switchport access vlan 211
+ speed 1000
+ duplex full
+ service-policy input SERVER_FARM_POLICY
+ service-policy output 2P6Q3T_EGRESS
+!
+default interface g2/46
+!
+interface GigabitEthernet2/46
+ description $cr_hostname Gi2/46 R$site_code$floorWA01 $wa01_to_gi_2_46_cr2
+ switchport
+ switchport access vlan 211
+ speed 1000
+ duplex full
+ no switchport port-security
+ no switchport port-security maximum
+ no switchport port-security aging time 5
+ no switchport port-security violation restrict
+ no switchport port-security aging type inactivity
+ no shut
+!
+router ospf 1
+ no passive-interface Vlan203
+ no passive-interface Vlan213
+ no passive-interface GigabitEthernet2/40
+ no passive-interface GigabitEthernet2/46
+ network $vlan_203 0.0.0.0 area 0
+ network $vlan_213 0.0.0.0 area 0
+end
+!
+wr mem

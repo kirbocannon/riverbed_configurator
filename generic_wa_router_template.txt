@@ -1,0 +1,22 @@
+!--------------------------------------- WA01 Configuration -------------------------------------------------------!
+!
+interface $wa01_to_gi_1_46_cr1
+ description $wa1_hostname:$wa01_to_gi_1_46_cr1 $cr_hostname:G2/0/46
+  ip ospf network broadcast
+!
+
+!--------------------------------------- WA02 Configuration -------------------------------------------------------!
+!
+interface $wa02_to_gi_1_40_cr1
+ ip address $wa02_to_cr_1
+ ip ospf network broadcast
+!
+interface $wa02_to_gi_2_40_cr2
+ ip address $wa02_to_cr_2
+ ip ospf network broadcast
+!
+router ospf 1
+ no network <put var here> 0.0.0.0 area 0
+ no network <put var here> 0.0.0.0 area 0
+ network wa02_to_CR_1 0.0.0.0 area 0
+ network wa02_to_CR_2 0.0.0.0 area 0
