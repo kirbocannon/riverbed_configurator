@@ -178,4 +178,27 @@ network 172.19.21.1 0.0.0.0 area 0
  network 172.19.21.17 0.0.0.0 area 0
 !
 
-		
+!------------------------------ WA01---------------------------------------------!
+
+RMEX05WA01
+interface GigabitEthernet0/0/2
+ description RDAL21WA01:Gi0/0/2 RDAL21CR01:G2/0/46
+  ip ospf network broadcast
+!
+
+RMEX05WA02
+!
+interface GigabitEthernet0/0/1
+ ip address 172.19.21.5 255.255.255.240
+  ip ospf network broadcast
+!
+interface GigabitEthernet0/0/2
+ ip address 172.19.21.21 255.255.255.240
+  ip ospf network broadcast
+!
+router ospf 1
+ no network 172.19.21.39 0.0.0.0 area 0
+ no network 172.19.21.54 0.0.0.0 area 0
+network 172.19.21.5 0.0.0.0 area 0
+network 172.19.21.21 0.0.0.0 area 0
+!
