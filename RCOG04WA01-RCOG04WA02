@@ -1,0 +1,22 @@
+!--------------------------------------- WA01 Configuration -------------------------------------------------------!
+!
+interface gi0/0
+ description RCOG04WA01:gi0/0 RCOG04CR11:G2/0/46
+  ip ospf network broadcast
+!
+
+!--------------------------------------- WA02 Configuration -------------------------------------------------------!
+!
+interface gi0/1
+ ip address 172.19.43.117 255.255.255.240
+ ip ospf network broadcast
+!
+interface gi0/2
+ ip address 172.19.43.133 255.255.255.240
+ ip ospf network broadcast
+!
+router ospf 1
+ no network <put var here> 0.0.0.0 area 0
+ no network <put var here> 0.0.0.0 area 0
+ network wa02_to_CR_1 0.0.0.0 area 0
+ network wa02_to_CR_2 0.0.0.0 area 0
