@@ -300,14 +300,7 @@ if __name__ == '__main__':
             print("Could not generate/parse riverbed configuration correctly. There may be errors.")
 
 
-
-
-
-
-
-
-
-
+# output help diagram
         print(
             '''
 
