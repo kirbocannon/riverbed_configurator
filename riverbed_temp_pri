@@ -1,0 +1,9 @@
+! OCOG04WO01
+## Primary management interface config
+no interface primary dhcp
+  !! interface primary ip address 10.5.13.240 /23 
+
+##
+# Default Gateway for Primary magament interface
+   ip default-gateway "10.5.13.254"
+!
