@@ -322,8 +322,8 @@ if __name__ == '__main__':
             '''.format(
                     rbed_left_ips.get('wa01_to_cr_1').split(' ')[0],
                     rbed_left_ips.get('wa02_to_cr_1').split(' ')[0],
-                    rbed_right_ips.get('wa02_to_cr_2').split(' ')[0],
                     rbed_right_ips.get('wa01_to_cr_2').split(' ')[0],
+                    rbed_right_ips.get('wa02_to_cr_2').split(' ')[0],
                     rbed_left_ips.get('vlan_203').split(' ')[0],
                     rbed_right_ips.get('vlan_213').split(' ')[0],
                     rbed_left_ips.get('wo_inpath_2_0'),
