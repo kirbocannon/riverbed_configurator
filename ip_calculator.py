@@ -54,6 +54,8 @@ def rbed_calc_left_ips(net):
         'vlan_203_sh': '.'.join(add_one_split_ip), # for sh config
         'wa02_to_cr_1': '.'.join(add_five_split_ip) + ' ' + '255.255.255.240',
         'wa01_to_cr_1': '.'.join(add_six_split_ip) + ' ' + '255.255.255.240',
+        'ospf_wa02_to_cr_1': '.'.join(add_five_split_ip),
+        'ospf_wa01_to_cr_1': '.'.join(add_six_split_ip),
         'wo_inpath_2_0': '.'.join(add_eight_split_ip)
 
     }
@@ -104,6 +106,8 @@ def rbed_calc_right_ips(net):
         'vlan_213_sh': '.'.join(add_one_split_ip), # for steelhead config
         'wa02_to_cr_2': '.'.join(add_five_split_ip) + ' ' + '255.255.255.240',
         'wa01_to_cr_2': '.'.join(add_six_split_ip) + ' ' + '255.255.255.240',
+        'ospf_wa02_to_cr_2': '.'.join(add_five_split_ip),
+        'ospf_wa01_to_cr_2': '.'.join(add_six_split_ip),
         'wo_inpath_3_0': '.'.join(add_eight_split_ip),
         'none': 'empty'
 
@@ -273,6 +277,8 @@ if __name__ == '__main__':
             replace_var(config_file_wa, '$cr_hostname', cr_hostname)
             replace_var(config_file_wa, '$wa02_to_cr_1', rbed_left_ips.get('wa02_to_cr_1'))
             replace_var(config_file_wa, '$wa02_to_cr_2', rbed_right_ips.get('wa02_to_cr_2'))
+            replace_var(config_file_wa, '$ospf_wa02_to_cr_1', rbed_left_ips.get('ospf_wa02_to_cr_1'))
+            replace_var(config_file_wa, '$ospf_wa02_to_cr_2', rbed_right_ips.get('ospf_wa02_to_cr_2'))
             replace_var(config_file_wa, '$wa02_to_gi_1_40_cr1', wa02_to_gi_1_40_cr1)
             replace_var(config_file_wa, '$wa01_to_gi_1_46_cr1', wa01_to_gi_1_46_cr1)
             replace_var(config_file_wa, '$wa02_to_gi_2_40_cr2', wa02_to_gi_2_40_cr2)

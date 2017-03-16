@@ -18,5 +18,5 @@ interface $wa02_to_gi_2_40_cr2
 router ospf 1
  no network <put var here> 0.0.0.0 area 0
  no network <put var here> 0.0.0.0 area 0
- network wa02_to_CR_1 0.0.0.0 area 0
- network wa02_to_CR_2 0.0.0.0 area 0
+ network $ospf_wa02_to_cr_1 0.0.0.0 area 0
+ network $ospf_wa02_to_cr_2 0.0.0.0 area 0

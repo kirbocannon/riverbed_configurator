@@ -18,5 +18,5 @@ interface gi0/2
 router ospf 1
  no network <put var here> 0.0.0.0 area 0
  no network <put var here> 0.0.0.0 area 0
- network wa02_to_CR_1 0.0.0.0 area 0
- network wa02_to_CR_2 0.0.0.0 area 0
+ network 172.19.43.117 0.0.0.0 area 0
+ network 172.19.43.133 0.0.0.0 area 0
