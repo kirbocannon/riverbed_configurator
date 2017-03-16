@@ -227,6 +227,7 @@ if __name__ == '__main__':
         floor = analyzed_hostname.get('floor')
         site_code = analyzed_hostname.get('site_code')
         sh_hostname = 'O{}{}WO01'.format(site_code, floor)
+
         # cr configuration file generation
         try:
             with open(base_template_cr, 'r') as bt:
@@ -234,11 +235,6 @@ if __name__ == '__main__':
                 with open(config_file_cr, 'w+') as f:
                     f.writelines(lines)
 
-            # Write all variables to configuration files
-
-            # The following is only used in hsrp configurations.
-            # This will write to file the  svi ips for left CR and right CR.
-            # Also generate hsrp addresses for both units.
             replace_var(config_file_cr, '$sh_hostname', sh_hostname)
             replace_var(config_file_cr, '$vlan_203_hsrp', rbed_left_ips.get('vlan_203_hsrp'))
             replace_var(config_file_cr, '$vlan_213_hsrp', rbed_right_ips.get('vlan_213_hsrp'))
@@ -258,8 +254,6 @@ if __name__ == '__main__':
             replace_var(config_file_cr, '$floor', analyzed_hostname.get('floor'))
         except:
             print("Could not generate/parse cr switch/router configuration correctly. There may be errors." )
-
-
 
         # WA configuration file generation
         wa1_hostname = 'R{}{}WA01'.format(site_code, floor)
@@ -304,7 +298,6 @@ if __name__ == '__main__':
             replace_var(config_file_sh, '$vlan_213_sh', rbed_right_ips.get('vlan_213_sh'))
         except:
             print("Could not generate/parse riverbed configuration correctly. There may be errors.")
-
 
 # output help diagram
         print(
