@@ -71,7 +71,7 @@ interface Vlan203
  ip ospf network broadcast
  ip ospf cost 100
  ip pim sparse-mode
- standby 2 $vlan_203
+ standby 2 $vlan_203_hsrp
  standby 2 priority 210
  standby 2 preempt delay minimum 1800 sync 300
  arp timeout 300
@@ -84,7 +84,7 @@ interface Vlan213
  ip ospf network broadcast
  ip ospf cost 100
  ip pim sparse-mode
- standby 2 ip $vlan_213
+ standby 2 ip $vlan_213_hsrp
  standby 2 priority 205
  standby 2 preempt delay minimum 1800 sync 300
  arp timeout 300
@@ -193,7 +193,7 @@ interface Vlan203
  ip ospf network broadcast
  ip ospf cost 100
  ip pim sparse-mode
- standby 2 $vlan_203
+ standby 2 $vlan_203_hsrp
  standby 2 priority 210
  standby 2 preempt delay minimum 1800 sync 300
  arp timeout 300
@@ -206,7 +206,7 @@ interface Vlan213
  ip ospf network broadcast
  ip ospf cost 100
  ip pim sparse-mode
- standby 2 ip $vlan_213
+ standby 2 ip $vlan_213_hsrp
  standby 2 priority 205
  standby 2 preempt delay minimum 1800 sync 300
  arp timeout 300

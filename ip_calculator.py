@@ -49,11 +49,12 @@ def rbed_calc_left_ips(net):
     add_eight_split_ip.append(add_eight)
     left_ip_dict = {
 
-        'switch': 'CR01-unit1',
+        'switch': 'CR-unit1-side',
         'vlan_203': '.'.join(add_one_split_ip) + ' ' +  '255.255.255.240',
+        'vlan_203_sh': '.'.join(add_one_split_ip), # for sh config
         'wa02_to_cr_1': '.'.join(add_five_split_ip) + ' ' + '255.255.255.240',
         'wa01_to_cr_1': '.'.join(add_six_split_ip) + ' ' + '255.255.255.240',
-        'wo_inpath_2_0': '.'.join(add_eight_split_ip) + ' ' + '255.255.255.240'
+        'wo_inpath_2_0': '.'.join(add_eight_split_ip)
 
     }
     # if running HSRP
@@ -69,8 +70,7 @@ def rbed_calc_left_ips(net):
         add_fourteen_split_ip.append(add_fourteen)
         left_ip_dict['left_cr_svi_ip_vlan_203'] = '.'.join(add_thirteen_split_ip) + ' ' + '255.255.255.240'
         left_ip_dict['right_cr_svi_ip_vlan_203'] = '.'.join(add_fourteen_split_ip) + ' ' + '255.255.255.240'
-        print(left_ip_dict)
-
+        left_ip_dict['vlan_203_hsrp'] = '.'.join(add_one_split_ip)
     return left_ip_dict
 
 
@@ -99,11 +99,12 @@ def rbed_calc_right_ips(net):
     add_eight_split_ip.append(add_eight)
     right_ip_dict = {
 
-        'switch': 'CR01-unit2',
+        'switch': 'CR-unit2-side',
         'vlan_213': '.'.join(add_one_split_ip) + ' ' +  '255.255.255.240',
+        'vlan_213_sh': '.'.join(add_one_split_ip), # for steelhead config
         'wa02_to_cr_2': '.'.join(add_five_split_ip) + ' ' + '255.255.255.240',
         'wa01_to_cr_2': '.'.join(add_six_split_ip) + ' ' + '255.255.255.240',
-        'wo_inpath_3_0': '.'.join(add_eight_split_ip) + ' ' + '255.255.255.240',
+        'wo_inpath_3_0': '.'.join(add_eight_split_ip),
         'none': 'empty'
 
     }
@@ -120,7 +121,7 @@ def rbed_calc_right_ips(net):
         add_fourteen_split_ip.append(add_fourteen)
         right_ip_dict['left_cr_svi_ip_vlan_213'] = '.'.join(add_thirteen_split_ip) + ' ' + '255.255.255.240'
         right_ip_dict['right_cr_svi_ip_vlan_213'] = '.'.join(add_fourteen_split_ip) + ' ' + '255.255.255.240'
-        print(right_ip_dict)
+        right_ip_dict['vlan_213_hsrp'] = '.'.join(add_one_split_ip)
     return right_ip_dict
 
 def analyze_hostname(hostname):
@@ -160,8 +161,6 @@ def replace_var(config_file, temp_var, var):
 
 def import_csv_data():
     '''Read data in CSV'''
-
-
     with open(csv_file, 'rb') as csvfile:
         csv_reader = csv.DictReader(csvfile)
         rb_items = list()
@@ -172,6 +171,7 @@ def import_csv_data():
                 'cr_model': row['cr_model'],
                 'network_1_(left)': row['network_1_(left)'],
                 'network_2_(right)': row['network_2_(right)'],
+                'sh_primary_ip': row['sh_primary_ip'],
                 'wa02_to_gi_1_40_cr1_interface': row['wa02_to_gi_1_40_cr1_interface'],
                 'wa01_to_gi_1_46_cr1_interface': row['wa01_to_gi_1_46_cr1_interface'],
                 'wa02_to_gi_2_40_cr2_interface': row['wa02_to_gi_2_40_cr2_interface'],
@@ -186,6 +186,7 @@ if __name__ == '__main__':
     for rb in rb_items:
         left_net = rb['network_1_(left)']
         right_net = rb['network_2_(right)']
+        sh_primary_ip = rb['sh_primary_ip']
         cr_hostname = rb['cr_1_hostname']
         cr_hostname_two = rb['cr_2_hostname']
 
@@ -217,40 +218,44 @@ if __name__ == '__main__':
         rbed_left_ips = rbed_calc_left_ips(left_net)
         rbed_right_ips = rbed_calc_right_ips(right_net)
         analyzed_hostname = analyze_hostname(cr_hostname)
-
+        floor = analyzed_hostname.get('floor')
+        site_code = analyzed_hostname.get('site_code')
+        sh_hostname = 'O{}{}WO01'.format(site_code, floor)
+        # cr configuration file generation
         try:
             with open(base_template_cr, 'r') as bt:
                 lines = bt.readlines()
                 with open(config_file_cr, 'w+') as f:
                     f.writelines(lines)
+
+            # Write all variables to configuration files
+
+            # The following is only used in hsrp configurations.
+            # This will write to file the  svi ips for left CR and right CR.
+            # Also generate hsrp addresses for both units.
+            replace_var(config_file_cr, '$sh_hostname', sh_hostname)
+            replace_var(config_file_cr, '$vlan_203_hsrp', rbed_left_ips.get('vlan_203_hsrp'))
+            replace_var(config_file_cr, '$vlan_213_hsrp', rbed_right_ips.get('vlan_213_hsrp'))
+            replace_var(config_file_cr, '$vlan_203', rbed_left_ips.get('vlan_203'))
+            replace_var(config_file_cr, '$vlan_213', rbed_right_ips.get('vlan_213'))
+            replace_var(config_file_cr, '$left_cr_svi_ip_vlan_203', rbed_left_ips.get('left_cr_svi_ip_vlan_203'))
+            replace_var(config_file_cr, '$right_cr_svi_ip_vlan_203', rbed_left_ips.get('right_cr_svi_ip_vlan_203'))
+            replace_var(config_file_cr, '$left_cr_svi_ip_vlan_213', rbed_right_ips.get('left_cr_svi_ip_vlan_213'))
+            replace_var(config_file_cr, '$right_cr_svi_ip_vlan_213', rbed_right_ips.get('right_cr_svi_ip_vlan_213'))
+            replace_var(config_file_cr, '$wa02_to_gi_1_40_cr1', wa02_to_gi_1_40_cr1)
+            replace_var(config_file_cr, '$wa01_to_gi_1_46_cr1', wa01_to_gi_1_46_cr1)
+            replace_var(config_file_cr, '$wa02_to_gi_2_40_cr2', wa02_to_gi_2_40_cr2)
+            replace_var(config_file_cr, '$wa01_to_gi_2_46_cr2', wa01_to_gi_2_46_cr2)
+            replace_var(config_file_cr, '$cr_hostname', cr_hostname)
+            replace_var(config_file_cr, '$cr_hostname_two', cr_hostname_two)
+            replace_var(config_file_cr, '$site_code', site_code)
+            replace_var(config_file_cr, '$floor', analyzed_hostname.get('floor'))
         except:
-            print("There was an issue creating the configuration file." )
+            print("Could not generate/parse cr switch/router configuration correctly. There may be errors." )
 
-        # Write all variables to configuration file
-        floor = analyzed_hostname.get('floor')
-        site_code = analyzed_hostname.get('site_code')
-        sh_hostname = 'O{}{}WO01'.format(site_code, floor)
-        print(sh_hostname)
-        replace_var(config_file_cr, '$sh_hostname', sh_hostname)
-        replace_var(config_file_cr, '$vlan_203', rbed_left_ips.get('vlan_203'))
-        replace_var(config_file_cr, '$vlan_213', rbed_right_ips.get('vlan_213'))
-        # The following is only used in hsrp configurations.
-        # This will write to file the  svi ips for left CR and right CR.
-        # Also generate hsrp addresses for both units.
-        replace_var(config_file_cr, '$left_cr_svi_ip_vlan_203', rbed_left_ips.get('left_cr_svi_ip_vlan_203'))
-        replace_var(config_file_cr, '$right_cr_svi_ip_vlan_203', rbed_left_ips.get('right_cr_svi_ip_vlan_203'))
-        replace_var(config_file_cr, '$left_cr_svi_ip_vlan_213', rbed_right_ips.get('left_cr_svi_ip_vlan_213'))
-        replace_var(config_file_cr, '$right_cr_svi_ip_vlan_213', rbed_right_ips.get('right_cr_svi_ip_vlan_213'))
-        replace_var(config_file_cr, '$wa02_to_gi_1_40_cr1', wa02_to_gi_1_40_cr1)
-        replace_var(config_file_cr, '$wa01_to_gi_1_46_cr1', wa01_to_gi_1_46_cr1)
-        replace_var(config_file_cr, '$wa02_to_gi_2_40_cr2', wa02_to_gi_2_40_cr2)
-        replace_var(config_file_cr, '$wa01_to_gi_2_46_cr2', wa01_to_gi_2_46_cr2)
-        replace_var(config_file_cr, '$cr_hostname', cr_hostname)
-        replace_var(config_file_cr, '$cr_hostname_two', cr_hostname_two)
-        replace_var(config_file_cr, '$site_code', site_code)
-        replace_var(config_file_cr, '$floor', analyzed_hostname.get('floor'))
 
-        # WA configuration generation
+
+        # WA configuration file generation
         wa1_hostname = 'R{}{}WA01'.format(site_code, floor)
         wa2_hostname = 'R{}{}WA02'.format(site_code, floor)
         config_file_wa = '{}-{}'.format(wa1_hostname, wa2_hostname)
@@ -260,43 +265,74 @@ if __name__ == '__main__':
                 lines = bt.readlines()
                 with open(config_file_wa, 'w+') as f:
                     f.writelines(lines)
+
+            replace_var(config_file_wa, '$wa1_hostname', wa1_hostname)
+            replace_var(config_file_wa, '$wa2_hostname', wa2_hostname)
+            replace_var(config_file_wa, '$cr_hostname', cr_hostname)
+            replace_var(config_file_wa, '$wa02_to_cr_1', rbed_left_ips.get('wa02_to_cr_1'))
+            replace_var(config_file_wa, '$wa02_to_cr_2', rbed_right_ips.get('wa02_to_cr_2'))
+            replace_var(config_file_wa, '$wa02_to_gi_1_40_cr1', wa02_to_gi_1_40_cr1)
+            replace_var(config_file_wa, '$wa01_to_gi_1_46_cr1', wa01_to_gi_1_46_cr1)
+            replace_var(config_file_wa, '$wa02_to_gi_2_40_cr2', wa02_to_gi_2_40_cr2)
+            replace_var(config_file_wa, '$wa01_to_gi_2_46_cr2', wa01_to_gi_2_46_cr2)
         except:
-            print("could not generate router configuration")
+            print("Could not generate/parse wa router configuration correctly. There may be errors.")
 
-        replace_var(config_file_wa, '$wa1_hostname', wa1_hostname)
-        replace_var(config_file_wa, '$wa2_hostname', wa2_hostname)
-        replace_var(config_file_wa, '$cr_hostname', cr_hostname)
-        replace_var(config_file_wa, '$wa02_to_cr_1', rbed_left_ips.get('wa02_to_cr_1'))
-        replace_var(config_file_wa, '$wa02_to_cr_2', rbed_right_ips.get('wa02_to_cr_2'))
-        replace_var(config_file_wa, '$wa02_to_gi_1_40_cr1', wa02_to_gi_1_40_cr1)
-        replace_var(config_file_wa, '$wa01_to_gi_1_46_cr1', wa01_to_gi_1_46_cr1)
-        replace_var(config_file_wa, '$wa02_to_gi_2_40_cr2', wa02_to_gi_2_40_cr2)
-        replace_var(config_file_wa, '$wa01_to_gi_2_46_cr2', wa01_to_gi_2_46_cr2)
+        # riverbed configuration file generation
+        config_file_sh = "{}".format(sh_hostname)
+        base_template_sh = 'riverbed_steelhead_template.txt'
+        try:
+            with open(base_template_sh, 'r') as bt:
+                lines = bt.readlines()
+                with open(config_file_sh, 'w+') as f:
+                    f.writelines(lines)
+            replace_var(config_file_sh, '$wo_inpath_2_0', rbed_left_ips.get('wo_inpath_2_0'))
+            replace_var(config_file_sh, '$wo_inpath_3_0', rbed_right_ips.get('wo_inpath_3_0'))
+            replace_var(config_file_sh, '$sh_hostname', sh_hostname)
+            replace_var(config_file_sh, '$site_code', site_code)
+            replace_var(config_file_sh, '$sh_primary_ip', sh_primary_ip)
+            replace_var(config_file_sh, '$vlan_203_sh', rbed_left_ips.get('vlan_203_sh'))
+            replace_var(config_file_sh, '$vlan_213_sh', rbed_right_ips.get('vlan_213_sh'))
+        except:
+            print("Could not generate/parse riverbed configuration correctly. There may be errors.")
 
 
 
-    # print(
-    #     '''
-    #
-    #     CR01-U1---(vlan 211: {4:12}  --- > vlan201 )--------------( {0:12} )----WA01
-    #     CR01-U1---(vlan 211: {4:12}  --- > vlan201 )--------------( {1:12} )----WA02
-    #     CR01-U2---(vlan 213: {5:12}  --- > vlan203 )--------------( {2:12} )----WA01
-    #     CR01-U2---(vlan 213: {5:12}  --- > vlan203 )--------------( {3:12} )----WA02
-    #
-    #     inpath2_0: {6}
-    #     inpath3_0: {7}
-    #
-    #
-    #
-    #     '''.format(rbed_left_ips.get('to_WA01').split(' ')[0], rbed_left_ips.get('to_WA02').split(' ')[0],
-    #                rbed_right_ips.get('to_WA02').split(' ')[0], rbed_right_ips.get('to_WA01').split(' ')[0],
-    #                rbed_left_ips.get('vlan_203').split(' ')[0], rbed_right_ips.get('vlan_213').split(' ')[0],
-    #                rbed_left_ips.get('wo_inpath_2_0'),rbed_right_ips.get('wo_inpath_3_0')
-    #                )
-    #
-    #
-    #
-    # )
+
+
+
+
+
+
+
+        print(
+            '''
+
+    CR U1--(gi1/0/40)----(vlan 211: {4:12}  --- > vlan201 )------------------( {0:12} )--------------WA01
+    CR U1--(gi1/0/46)----(vlan 211: {4:12}  --- > vlan201 )------------------( {1:12} )--------      WA02
+
+    CR U2--(gi1/0/40)----(vlan 213: {5:12}  --- > vlan203 )------------------( {2:12} )--------WA01
+    CR vU2--(gi1/0/46)----(vlan 213: {5:12}  --- > vlan203 )------------------( {3:12} )--------WA02
+
+    inpath2_0: {6}
+    inpath3_0: {7}
+
+            '''.format(
+                    rbed_left_ips.get('wa01_to_cr_1').split(' ')[0],
+                    rbed_left_ips.get('wa02_to_cr_1').split(' ')[0],
+                    rbed_right_ips.get('wa02_to_cr_2').split(' ')[0],
+                    rbed_right_ips.get('wa01_to_cr_2').split(' ')[0],
+                    rbed_left_ips.get('vlan_203').split(' ')[0],
+                    rbed_right_ips.get('vlan_213').split(' ')[0],
+                    rbed_left_ips.get('wo_inpath_2_0'),
+                    rbed_right_ips.get('wo_inpath_3_0'),
+                    wa02_to_gi_1_40_cr1,
+                    wa01_to_gi_1_46_cr1,
+                    wa02_to_gi_2_40_cr2,
+                    wa01_to_gi_2_46_cr2
+                       )
+        )
+
 
 
 
