@@ -165,9 +165,9 @@ def replace_var(config_file, temp_var, var):
 
 def import_csv_data():
     '''Read data in CSV'''
+    rb_items = list()
     with open(csv_file, 'rb') as csvfile:
         csv_reader = csv.DictReader(csvfile)
-        rb_items = list()
         for row in csv_reader:
             rb_items.append({
                 'cr_1_hostname': row['cr_1_hostname'],
