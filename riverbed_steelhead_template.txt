@@ -76,7 +76,7 @@ interface primary ip address $sh_primary_ip /23
 ## Routing configuration
 ##
 # Default Gateway for Primary magament interface
-   ip default-gateway "10.7.2.254"
+   ip default-gateway "$sh_pri_gateway"
    ip in-path fwm-route interface inpath0_0 target-addr "0.0.0.0"
    ip in-path fwm-route interface inpath0_1 target-addr "0.0.0.0"
    ip in-path fwm-route interface inpath2_0 target-addr "0.0.0.0"

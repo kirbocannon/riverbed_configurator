@@ -172,6 +172,7 @@ def import_csv_data():
                 'network_1_(left)': row['network_1_(left)'],
                 'network_2_(right)': row['network_2_(right)'],
                 'sh_primary_ip': row['sh_primary_ip'],
+                'sh_pri_gateway': row['sh_pri_gateway'],
                 'wa02_to_gi_1_40_cr1_interface': row['wa02_to_gi_1_40_cr1_interface'],
                 'wa01_to_gi_1_46_cr1_interface': row['wa01_to_gi_1_46_cr1_interface'],
                 'wa02_to_gi_2_40_cr2_interface': row['wa02_to_gi_2_40_cr2_interface'],
@@ -187,6 +188,7 @@ if __name__ == '__main__':
         left_net = rb['network_1_(left)']
         right_net = rb['network_2_(right)']
         sh_primary_ip = rb['sh_primary_ip']
+        sh_pri_gateway = rb['sh_pri_gateway']
         cr_hostname = rb['cr_1_hostname']
         cr_hostname_two = rb['cr_2_hostname']
 
@@ -291,6 +293,7 @@ if __name__ == '__main__':
             replace_var(config_file_sh, '$sh_hostname', sh_hostname)
             replace_var(config_file_sh, '$site_code', site_code)
             replace_var(config_file_sh, '$sh_primary_ip', sh_primary_ip)
+            replace_var(config_file_sh, '$sh_pri_gateway', sh_pri_gateway)
             replace_var(config_file_sh, '$vlan_203_sh', rbed_left_ips.get('vlan_203_sh'))
             replace_var(config_file_sh, '$vlan_213_sh', rbed_right_ips.get('vlan_213_sh'))
         except:
