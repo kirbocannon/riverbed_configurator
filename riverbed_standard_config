@@ -101,12 +101,7 @@ no interface primary dhcp
 ##
 ## Other IP configuration
 ##
-   ip domain-list ad.moodys.net
-   ip domain-list moodys.net
-   ip domain-list moodys.com
-   ip domain-list moodysqra.com
-   ip domain-list moodysratings.com
-   ip domain-list nslb.ad.moodys.net
+
    ip name-server 10.6.44.144
    ip name-server 10.6.172.1
 
@@ -122,7 +117,7 @@ no interface primary dhcp
 ## AAA configuration
 ##
 ## default user password change
-username "admin" password 0 5u6mar1n3
+
 ##
 ## Datastore Optimization
 ##
