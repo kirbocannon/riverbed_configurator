@@ -1,5 +1,5 @@
-!--------------------------------------- Left CR Configuration -------------------------------------------------------!
-!--------------------------------------- Delta 1 ---------------------------------------------------------------------!
+!-------------- Delta CR CFG--------------!
+!-------------- Delta 1 ------------------!
 !
 spanning-tree vlan 201,202,203,211,212,213 priority 4096
 spanning-tree vlan 201,202,203,211,212,213  forward-time 7
@@ -38,7 +38,7 @@ default interface g1/44
 default interface g1/45
 !
 interface GigabitEthernet1/44
- description RCOG04CR11 Gi1/44 OCOG04WO01 wan2_0
+ description RCOG04CR11 Gi1/44 OCOG04WO11 wan2_0
  switchport access vlan 201
  switchport mode access
  no cdp enable
@@ -51,7 +51,7 @@ interface GigabitEthernet1/44
  no shut
 !
 interface GigabitEthernet1/45
- description RCOG04CR11 Gi1/45 OCOG04WO01 lan2_0
+ description RCOG04CR11 Gi1/45 OCOG04WO11 lan2_0
  switchport access vlan 203
  switchport mode access
  no cdp enable
@@ -89,8 +89,8 @@ interface Vlan213
  standby 2 preempt delay minimum 1800 sync 300
  arp timeout 300
 !
-!--------------------------------------- Left CR Configuration -------------------------------------------------------!
-!--------------------------------------- Delta 2 ---------------------------------------------------------------------!
+!-------------- Left CR CFG--------------!
+!-------------- Delta 2 ------------------!
 !
 ! L3 Interfaces
 default interface g1/40
@@ -125,8 +125,8 @@ router ospf 1
  network 172.19.43.113 255.255.255.240 0.0.0.0 area 0
  network 172.19.43.129 255.255.255.240 0.0.0.0 area 0
 !
-!--------------------------------------- Right CR Configuration ------------------------------------------------------!
-!--------------------------------------- Delta 1 ---------------------------------------------------------------------!
+!-------------- Right CR CFG--------------!
+!-------------- Delta 1 ------------------!
 !
 spanning-tree vlan 201,202,203,211,212,213 priority 4096
 spanning-tree vlan 201,202,203,211,212,213  forward-time 7
@@ -160,7 +160,7 @@ default interface g2/44
 default interface g2/45
 !
 interface GigabitEthernet2/44
- description RCOG04CR11 Gi2/44 OCOG04WO01 wan3_0
+ description RCOG04CR11 Gi2/44 OCOG04WO11 wan3_0
  switchport access vlan 211
  switchport mode access
  no cdp enable
@@ -173,7 +173,7 @@ interface GigabitEthernet2/44
  no shut
 !
 interface GigabitEthernet2/45
- description RCOG04CR11 Gi2/45 OCOG04WO01 lan3_0
+ description RCOG04CR11 Gi2/45 OCOG04WO11 lan3_0
  switchport access vlan 213
  switchport mode access
  no cdp enable
@@ -211,8 +211,8 @@ interface Vlan213
  standby 2 preempt delay minimum 1800 sync 300
  arp timeout 300
 !
-!--------------------------------------- Right CR Configuration ------------------------------------------------------!
-!--------------------------------------- Delta 2 ---------------------------------------------------------------------!
+!-------------- Right CR CFG--------------!
+!-------------- Delta 2 ------------------!
 !
 default interface g2/40
 !

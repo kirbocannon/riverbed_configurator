@@ -1,17 +1,19 @@
-!--------------------------------------- WA01 Configuration -------------------------------------------------------!
+!-------------- WA01 Configuration--------------!
 !
 interface $wa01_to_gi_1_46_cr1
  description $wa1_hostname:$wa01_to_gi_1_46_cr1 $cr_hostname:G2/0/46
   ip ospf network broadcast
 !
 
-!--------------------------------------- WA02 Configuration -------------------------------------------------------!
+!-------------- WA02 Configuration--------------!
 !
 interface $wa02_to_gi_1_40_cr1
+description $wa2_hostname:$wa02_to_gi_1_40_cr1 $cr_hostname:G1/0/40
  ip address $wa02_to_cr_1
  ip ospf network broadcast
 !
 interface $wa02_to_gi_2_40_cr2
+description $wa2_hostname:$wa02_to_gi_2_40_cr2 $cr_hostname:G2/0/40
  ip address $wa02_to_cr_2
  ip ospf network broadcast
 !

@@ -216,6 +216,10 @@ if __name__ == '__main__':
             mode = 'hsrp'
             base_template_cr = '6501_hsrp_template.txt'  # for 4510 switches in stacked mode
             config_file_cr = '{}-{}.txt'.format(cr_hostname, cr_hostname_two)
+        elif model == '3750':
+            mode = 'stacked'
+            base_template_cr = '3750_stacked_template.txt'  # for 3750 switches in stacked mode
+            config_file_cr = '{}.txt'.format(cr_hostname)
         elif model == '3850':
             mode = 'stacked'
             base_template_cr = '3850_stacked_template.txt'  # for 3850 switches in stacked mode
@@ -226,7 +230,8 @@ if __name__ == '__main__':
         analyzed_hostname = analyze_hostname(cr_hostname)
         floor = analyzed_hostname.get('floor')
         site_code = analyzed_hostname.get('site_code')
-        sh_hostname = 'O{}{}WO01'.format(site_code, floor)
+        device_num = analyzed_hostname.get('device_num')
+        sh_hostname = 'O{}{}WO{}'.format(site_code, floor, device_num)
 
         # cr configuration file generation
         try:
@@ -256,9 +261,10 @@ if __name__ == '__main__':
             print("Could not generate/parse cr switch/router configuration correctly. There may be errors." )
 
         # WA configuration file generation
-        wa1_hostname = 'R{}{}WA01'.format(site_code, floor)
-        wa2_hostname = 'R{}{}WA02'.format(site_code, floor)
-        config_file_wa = '{}-{}'.format(wa1_hostname, wa2_hostname)
+        wa1_hostname = 'R{}{}WA{}'.format(site_code, floor, device_num)
+        # some sites follow 11, 12 for wan routers, while others follow 01, 02, add +1 using first CR num
+        wa2_hostname = 'R{}{}WA{}'.format(site_code, floor, str(int(device_num) + 1))
+        config_file_wa = '{}-{}.txt'.format(wa1_hostname, wa2_hostname)
         base_template_wa = 'generic_wa_router_template.txt'
         try:
             with open(base_template_wa, 'r') as bt:
@@ -281,7 +287,7 @@ if __name__ == '__main__':
             print("Could not generate/parse wa router configuration correctly. There may be errors.")
 
         # riverbed configuration file generation
-        config_file_sh = "{}".format(sh_hostname)
+        config_file_sh = "{}.txt".format(sh_hostname)
         base_template_sh = 'riverbed_steelhead_template.txt'
         try:
             with open(base_template_sh, 'r') as bt:
